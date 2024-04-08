@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\api\HomeController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\UsersController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -27,4 +28,5 @@ use Illuminate\Support\Facades\Route;
 // });
 
 Route::resource('posts', PostController::class);
+Route::resource('users', UsersController::class);
 Route::post('/post',[PostController::class,'swagger']);
