@@ -7,20 +7,20 @@ use Illuminate\Http\Request;
 
 class PostController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+   private $posts;
+   
+   public function __construct(){
+    $this->posts = new Post();
+   }
     public function index()
     {
-        //
+        $allPost =  $this->posts->all();
+        return response()->json($allPost);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        
     }
 
     /**
@@ -28,16 +28,34 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $dataInsert = [
+            'title' => $request->title,
+            'description' => $request->description
+        ];
+    
+        $insert = $this->posts->insertData($dataInsert);
+    
+        if ($insert) {
+            return response()->json("success", 200);
+        } else {
+            return response()->json("error", 500);
+        }
     }
+    
 
     /**
      * Display the specified resource.
      */
-    public function show(Post $post)
+    public function show($id)
     {
-        //
+        $data = $this->posts->getOne($id);
+        if ($data) {
+            return response()->json($data);
+        } else {
+            return response()->json(['message' => 'Post not found'], 404);
+        }
     }
+    
 
     /**
      * Show the form for editing the specified resource.
@@ -50,16 +68,31 @@ class PostController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Post $post)
+    public function update(Request $request, $id)
     {
-        //
+        $dataUpdate = [
+            'title' => $request->title,
+            'description' => $request->description
+        ];
+        $data = $this->posts->updatePost($id, $dataUpdate);
+        if ($data) {
+            return response()->json('sucess',200);
+        } else {
+            return response()->json(['message' => 'Cannot update'], 404);
+        }
+
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Post $post)
+    public function destroy($id)
     {
-        //
+        $data = $this->posts->deletePost($id);
+        if ($data) {
+            return response()->json('sucess',200);
+        } else {
+            return response()->json(['message' => 'Cannot delete'], 404);
+        }
     }
 }
