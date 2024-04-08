@@ -27,4 +27,4 @@ use Illuminate\Support\Facades\Route;
 // });
 
 Route::resource('posts', PostController::class);
-Route::post('/home',[HomeController::class,'index']);
+Route::post('/post',[PostController::class,'swagger']);

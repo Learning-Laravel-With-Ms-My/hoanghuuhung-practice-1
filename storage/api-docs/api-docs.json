@@ -1,0 +1,41 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Your super  ApplicationAPI",
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/posts": {
+            "post": {
+                "tags": [
+                    "Post"
+                ],
+                "summary": "Tạo một bài viết mới",
+                "description": "",
+                "operationId": "7d8e84cca261c502e604d195ee91e848",
+                "parameters": [
+                    {
+                        "name": "title",
+                        "in": "query",
+                        "description": "Nhập tên của bạn",
+                        "required": true
+                    },
+                    {
+                        "name": "description",
+                        "in": "query",
+                        "description": "Nhập mô tả",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

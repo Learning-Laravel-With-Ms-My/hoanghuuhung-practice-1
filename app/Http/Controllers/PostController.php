@@ -4,6 +4,30 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use Illuminate\Http\Request;
+/**
+ * @OA\Post(
+ *     path="/api/posts",
+ *     summary="Create a new post",
+ *     description="Create a new post with the provided title and description",
+ *     tags={"Post"},
+ *     @OA\RequestBody(
+ *         required=true,
+ *         @OA\JsonContent(
+ *             required={"title", "description"},
+ *             @OA\Property(property="title", type="string", example="New Post Title"),
+ *             @OA\Property(property="description", type="string", example="This is a new post description")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="OK",
+ *         @OA\MediaType(
+ *             mediaType="application/json"
+ *         )
+ *     )
+ * )
+ */
+
 
 class PostController extends Controller
 {
@@ -12,10 +36,32 @@ class PostController extends Controller
    public function __construct(){
     $this->posts = new Post();
    }
+   public function getAllPostsForSwagger()
+   {
+       // Lấy tất cả các bài viết từ cơ sở dữ liệu
+       $posts = Post::all();
+
+       return $posts;
+   }
+
     public function index()
     {
         $allPost =  $this->posts->all();
         return response()->json($allPost);
+    }
+    public function swagger(Request $request)
+    {
+        // Xử lý yêu cầu Swagger ở đây
+        // Ví dụ: tạo bài viết mới từ dữ liệu được gửi từ Swagger UI
+
+        $validatedData = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+        ]);
+
+        $post = Post::create($validatedData);
+
+        return response()->json($post, 201);
     }
 
     public function create()
