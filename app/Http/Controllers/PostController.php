@@ -4,8 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use Illuminate\Http\Request;
-
-
+use Illuminate\Support\Facades\Validator;
 class PostController extends Controller
 {
         /**
@@ -79,21 +78,40 @@ class PostController extends Controller
  * )
  */
 
-    public function store(Request $request)
-    {
-        $dataInsert = [
-            'title' => $request->title,
-            'description' => $request->description
-        ];
-    
-        $insert = $this->posts->insertData($dataInsert);
-    
-        if ($insert) {
-            return response()->json("success", 200);
-        } else {
-            return response()->json("error", 500);
-        }
-    }
+ public function store(Request $request)
+ {
+     $validator = Validator::make($request->all(), [
+         'title' => 'required|unique:posts|max:100|min:5',
+         'description' => 'required|max:50|min:10',
+     ], [
+         'title.required' => 'Title bắt buộc phải nhập',
+         'title.min' => 'Title phải từ :min ký tự trở lên',
+         'title.max' => 'Title phải từ :max ký tự trở lên',
+         'title.unique' => 'Title đã tồn tại trên hệ thống',
+         'description.required' => 'Description bắt buộc phải nhập',
+         'description.min' => 'Description phải từ :min ký tự trở lên',
+         'description.max' => 'Description phải từ :max ký tự trở lên',
+     ]);
+ 
+     if ($validator->fails()) {
+         $errors = $validator->errors()->all();
+         return response()->json($errors, 412);
+     }
+ 
+     $dataInsert = [
+         'title' => $request->title,
+         'description' => $request->description
+     ];
+ 
+     $insert = $this->posts->insertData($dataInsert);
+ 
+     if ($insert) {
+         return response()->json("success", 200);
+     } else {
+         return response()->json("error", 500);
+     }
+ }
+ 
     
 
      /**
@@ -160,6 +178,23 @@ class PostController extends Controller
  */
     public function update(Request $request, $id)
     {
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|unique:posts|max:100|min:5',
+            'description' => 'required|max:50|min:10',
+        ], [
+            'title.required' => 'Title bắt buộc phải nhập',
+            'title.min' => 'Title phải từ :min ký tự trở lên',
+            'title.max' => 'Title phải từ :max ký tự trở lên',
+            'title.unique' => 'Title đã tồn tại trên hệ thống',
+            'description.required' => 'Description bắt buộc phải nhập',
+            'description.min' => 'Description phải từ :min ký tự trở lên',
+            'description.max' => 'Description phải từ :max ký tự trở lên',
+        ]);
+
+        if ($validator->fails()) {
+            $errors = $validator->errors()->all();
+            return response()->json($errors, 412);
+        } 
         $dataUpdate = [
             'title' => $request->title,
             'description' => $request->description

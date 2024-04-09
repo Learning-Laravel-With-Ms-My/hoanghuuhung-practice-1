@@ -28,5 +28,5 @@ use Illuminate\Support\Facades\Route;
 // });
 
 Route::resource('posts', PostController::class);
-Route::resource('users', UsersController::class);
+// Route::resource('users', UsersController::class);
 // Route::post('/post',[PostController::class,'swagger']);
