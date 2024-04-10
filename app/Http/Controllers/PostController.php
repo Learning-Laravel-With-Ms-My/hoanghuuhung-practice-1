@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
+use App\Models\Users;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 class PostController extends Controller
@@ -80,39 +81,25 @@ class PostController extends Controller
 
  public function store(Request $request)
  {
-     $validator = Validator::make($request->all(), [
-         'title' => 'required|unique:posts|max:100|min:5',
-         'description' => 'required|max:50|min:10',
-     ], [
-         'title.required' => 'Title bắt buộc phải nhập',
-         'title.min' => 'Title phải từ :min ký tự trở lên',
-         'title.max' => 'Title phải từ :max ký tự trở lên',
-         'title.unique' => 'Title đã tồn tại trên hệ thống',
-         'description.required' => 'Description bắt buộc phải nhập',
-         'description.min' => 'Description phải từ :min ký tự trở lên',
-         'description.max' => 'Description phải từ :max ký tự trở lên',
-     ]);
- 
-     if ($validator->fails()) {
-         $errors = $validator->errors()->all();
-         return response()->json($errors, 412);
-     }
- 
-     $dataInsert = [
-         'title' => $request->title,
-         'description' => $request->description
-     ];
- 
-     $insert = $this->posts->insertData($dataInsert);
- 
-     if ($insert) {
-         return response()->json("success", 200);
-     } else {
-         return response()->json("error", 500);
-     }
- }
- 
-    
+
+    $validator = Validator::make($request->all(), [
+        'title' => 'required|unique:posts|max:100|min:5',
+        'description' => 'required|max:50|min:10',
+    ], [
+    ]);
+    if ($validator->fails()) {
+        $errors = $validator->errors()->all();
+        return response()->json($errors, 412);
+    }
+    $post = new Post();
+    $post->title = $request->title;
+    $post->description = $request->description;
+    $post->user_id = $request->user_id; 
+    $post->save();
+
+    // Thành công
+    return response()->json("success", 200);
+ } 
 
      /**
      * @OA\Get(
@@ -132,12 +119,30 @@ class PostController extends Controller
      */
     public function show($id)
     {
-        $data = $this->posts->getOne($id);
-        if ($data) {
-            return response()->json($data);
-        } else {
-            return response()->json(['message' => 'Post not found'], 404);
-        }
+     // Lấy thông tin về bài đăng với thông tin người tạo
+     $post = Post::with('user')->find($id);
+
+     if ($post) {
+         // Tạo một mảng kết hợp chứa dữ liệu
+         $responseData = [
+             'success' => true,
+             'data' => [
+                 'id' => $post->id,
+                 'title' => $post->title,
+                 'email' => $post->user->email, // Giả sử email của người tạo là trường email trong model User
+                 'description' => $post->description,
+                 'create_by' => $post->user->name, // Giả sử tên của người tạo là trường name trong model User
+                 'created_at' => $post->created_at,
+                 'updated_at' => $post->updated_at
+             ]
+         ];
+ 
+         // Trả về mảng dữ liệu
+         return response()->json($responseData);
+     } else {
+         // Nếu không tìm thấy bài đăng, trả về thông báo lỗi
+         return response()->json(['message' => 'Post not found'], 404);
+     }
     }
     
 
@@ -197,7 +202,8 @@ class PostController extends Controller
         } 
         $dataUpdate = [
             'title' => $request->title,
-            'description' => $request->description
+            'description' => $request->description,
+            'user_id' => $request->user_id,
         ];
         $data = $this->posts->updatePost($id, $dataUpdate);
         if ($data) {

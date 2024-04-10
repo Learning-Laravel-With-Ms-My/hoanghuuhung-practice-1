@@ -22,4 +22,8 @@ class Post extends Model
     public function deletePost($id){
         return DB::table('posts')->where('id', $id)->delete();
     }
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }

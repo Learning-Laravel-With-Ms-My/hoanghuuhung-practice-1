@@ -32,4 +32,7 @@ class Users extends Model
     {
         return $this->hasOne(Phone::class, 'user_id', 'id');
     }
+    public function userPost(){
+        return $this->hasMany(Post::class, 'user_id', 'id');
+    }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Users;
 use App\Models\Phone;
+use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 class UsersController extends Controller
@@ -17,9 +18,10 @@ class UsersController extends Controller
        }
     public function index()
     {
-        $allUsers = Users::with('userPhone')->get();
+    // Lấy tất cả người dùng cùng với thông tin về điện thoại và bài đăng của họ
+    $allUsers = Users::with('userPhone', 'userPost')->get();
 
-        return response()->json($allUsers);
+    return response()->json($allUsers);
     }
 
     /**
@@ -81,7 +83,7 @@ class UsersController extends Controller
      */
     public function show($id)
     {
-        $user = Users::with('userPhone')->find($id);
+        $user = Users::with('userPhone','userPost')->find($id);
 
         if ($user) {
             return response()->json($user);
@@ -155,17 +157,20 @@ class UsersController extends Controller
      */
     public function destroy($id)
     {
-        // Xóa thông tin số điện thoại của người dùng từ bảng phones
-        Phone::where('user_id', $id)->delete();
-    
-        // Xóa người dùng từ bảng users
-        $deleted = Users::destroy($id);
-    
-        if ($deleted) {
-            return response()->json('success', 200);
-        } else {
-            return response()->json(['message' => 'Cannot delete'], 404);
-        }
+    // Xóa thông tin số điện thoại của người dùng từ bảng phones
+    Phone::where('user_id', $id)->delete();
+
+    // Xóa tất cả các bài đăng của người dùng
+    Post::where('user_id', $id)->delete();
+
+    // Xóa người dùng từ bảng users
+    $deleted = Users::destroy($id);
+
+    if ($deleted) {
+        return response()->json('success', 200);
+    } else {
+        return response()->json(['message' => 'Cannot delete'], 404);
+    }
     }
     
 }
