@@ -10,7 +10,12 @@ use Illuminate\Support\Facades\DB;
 class Users extends Model
 {
     use HasFactory;
-    public $timestamps = false;
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+    ];
+    // public $timestamps = false;
     public function insertData($data){
         return DB::table('users')->insert($data);
     }
@@ -22,5 +27,9 @@ class Users extends Model
     }
     public function deletePost($id){
         return DB::table('users')->where('id', $id)->delete();
+    }
+    public function userPhone()
+    {
+        return $this->hasOne(Phone::class, 'user_id', 'id');
     }
 }

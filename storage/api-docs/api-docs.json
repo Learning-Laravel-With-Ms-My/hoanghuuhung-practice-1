@@ -94,6 +94,20 @@
                         "schema": {
                             "type": "string"
                         }
+                    },
+
+                    {
+                        "name": "phone",
+
+                        "in": "query",
+
+                        "description": "Phone number",
+
+                        "required": true,
+
+                        "schema": {
+                            "type": "string"
+                        }
                     }
                 ],
 
@@ -217,6 +231,20 @@
                         "in": "query",
 
                         "description": "The repassword of the user",
+
+                        "required": true,
+
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                    ,
+                    {
+                        "name": "phone",
+
+                        "in": "query",
+
+                        "description": "Phone number",
 
                         "required": true,
 
